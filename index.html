@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>VR Medical Training Prototype</title>
+    <!-- Include A-Frame -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <!-- Include A-Frame Environment Component -->
+    <script src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
+    
+    <!-- Custom Script for Interaction -->
+    <script>
+      AFRAME.registerComponent('patient-interaction', {
+        init: function () {
+          let el = this.el;
+          let feedbackText = document.querySelector('#feedback-text');
+          
+          el.addEventListener('click', function () {
+            // Simulated Medical Decision / Feedback
+            const conditions = [
+              "Heart rate: 120 bpm (Tachycardia). Action needed!",
+              "Patient is stable. Heart rate: 72 bpm.",
+              "Breathing is shallow. Apply Oxygen."
+            ];
+            
+            // Pick a random condition
+            const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
+            
+            feedbackText.setAttribute('value', "Diagnosis:\n" + randomCondition);
+            feedbackText.setAttribute('color', '#FF0000');
+            
+            // Animation for feedback
+            el.setAttribute('animation', 'property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 200; loop: 1');
+            setTimeout(() => {
+                el.removeAttribute('animation');
+            }, 400);
+          });
+          
+          el.addEventListener('mouseenter', function () {
+            el.setAttribute('color', '#FFC107'); // Highlight on hover
+            feedbackText.setAttribute('value', 'Examine Patient\n(Click to check status)');
+            feedbackText.setAttribute('color', '#FFFFFF');
+          });
+          
+          el.addEventListener('mouseleave', function () {
+            el.setAttribute('color', '#4CAF50'); // Back to normal
+            feedbackText.setAttribute('value', 'Welcome to VR Medical Training.\nLook at objects to interact.');
+            feedbackText.setAttribute('color', '#FFFFFF');
+          });
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <a-scene>
+      <!-- Environment Setup -->
+      <!-- Ek professional 3D Grid Environment jisse space aur floor premium lage -->
+      <a-entity environment="preset: tron; skyType: color; skyColor: #212121; groundColor: #455A64; groundColor2: #607D8B; grid: 1x1; gridColor: #00E676"></a-entity>
+
+      <!-- UI / Main Title -->
+      <a-text value="VR MEDICAL TRAINING\nPractice. Learn. Improve. Before the Real Patient." 
+              font="exo2bold" align="center" position="0 3 -3" color="#00E676" width="7"></a-text>
+
+      <!-- Feedback Display Panel (HUD) -->
+      <a-entity position="0 2 -2.5">
+        <!-- Transparent Glass Panel -->
+        <a-plane width="3" height="0.8" color="#000000" opacity="0.6" material="transparent: true"></a-plane>
+        <!-- Futuristic Text -->
+        <a-text id="feedback-text" value="Welcome to VR Medical Training.\nLook at objects to interact." 
+                font="kelsonsans" align="center" position="0 0 0.01" color="#FFFFFF" width="4"></a-text>
+      </a-entity>
+
+      <!-- Virtual Patient (Represented by a capsule/cylinder) -->
+      <a-entity position="0 1 -3">
+        <!-- Patient Body -->
+        <a-cylinder position="0 0 0" radius="0.5" height="1.5" color="#4CAF50" patient-interaction shadow></a-cylinder>
+        <!-- Patient Head -->
+        <a-sphere position="0 1.2 0" radius="0.4" color="#FFC6A5"></a-sphere>
+        <a-text value="Virtual Patient" font="exo2bold" align="center" position="0 1.8 0" color="#FFFFFF" width="3"></a-text>
+      </a-entity>
+
+      <!-- Virtual Medical Equipment (e.g., Stethoscope / First Aid Kit representation) -->
+      <a-box position="-2 0.5 -2.5" rotation="0 45 0" color="#FF5252" depth="0.5" height="0.5" width="0.8">
+        <a-text value="First Aid Kit" font="kelsonsans" align="center" position="0 0.6 0" color="#FFFFFF" width="3"></a-text>
+      </a-box>
+
+      <a-cylinder position="2 0.5 -2.5" radius="0.2" height="0.5" color="#2196F3">
+         <a-text value="Oxygen Tank" font="kelsonsans" align="center" position="0 0.6 0" color="#FFFFFF" width="3"></a-text>
+      </a-cylinder>
+
+      <!-- Camera and Cursor (for Interaction) -->
+      <a-entity camera position="0 1.6 0" look-controls wasd-controls>
+        <!-- Reticle (Cursor) -->
+        <a-entity cursor="fuse: false; rayOrigin: mouse;"
+                  position="0 0 -1"
+                  geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                  material="color: black; shader: flat"
+                  animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.1 0.1 0.1; to: 1 1 1"
+                  animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 1 1 1; to: 0.1 0.1 0.1"
+                  animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 500; to: 1 1 1">
+        </a-entity>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
